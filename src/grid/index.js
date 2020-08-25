@@ -97,10 +97,13 @@ class SpreadsheetGrid extends React.PureComponent {
                     newActiveCell = { x, y: y + 1 };
                 } else if (x < rowsCount - 1) {
                     newActiveCell = { x: x + 1, y: 0 };
+                } else {
+                    newActiveCell = null
                 }
+
                 newFocusedCell = null;
 
-                if (find(block.props.disabledCells, newActiveCell)) {
+                if (newActiveCell && find(block.props.disabledCells, newActiveCell)) {
                     moveRight(newActiveCell);
                 }
             }
@@ -108,10 +111,12 @@ class SpreadsheetGrid extends React.PureComponent {
             function moveDown({ x, y }) {
                 if (x < rowsCount - 1) {
                     newActiveCell = { x: x + 1, y };
+                } else {
+                    newActiveCell = null
                 }
                 newFocusedCell = null;
 
-                if (find(block.props.disabledCells, newActiveCell)) {
+                if (newActiveCell && find(block.props.disabledCells, newActiveCell)) {
                     moveDown(newActiveCell);
                 }
             }
@@ -119,10 +124,12 @@ class SpreadsheetGrid extends React.PureComponent {
             function moveUp({ x, y }) {
                 if (x > 0) {
                     newActiveCell = { x: x - 1, y };
+                } else {
+                    newActiveCell = null
                 }
                 newFocusedCell = null;
 
-                if (find(block.props.disabledCells, newActiveCell)) {
+                if (newActiveCell && find(block.props.disabledCells, newActiveCell)) {
                     moveUp(newActiveCell);
                 }
             }
@@ -132,20 +139,24 @@ class SpreadsheetGrid extends React.PureComponent {
                     newActiveCell = { x, y: y - 1 };
                 } else if (x > 0) {
                     newActiveCell = { x: x - 1, y: columnsCount - 1 };
+                } else {
+                    newActiveCell = null
                 }
                 newFocusedCell = null;
 
-                if (find(block.props.disabledCells, newActiveCell)) {
+                if (newActiveCell && find(block.props.disabledCells, newActiveCell)) {
                     moveLeft(newActiveCell);
                 }
             }
 
             if (!this.state.focusedCell) {
                 if (e.keyCode === keys.RIGHT) {
+                    e.preventDefault();
                     moveRight({ x, y });
                 }
 
                 if (e.keyCode === keys.LEFT) {
+                    e.preventDefault();
                     moveLeft({ x, y });
                 }
 
@@ -166,19 +177,15 @@ class SpreadsheetGrid extends React.PureComponent {
 
             if (e.keyCode === keys.ENTER) {
                 if (this.state.focusedCell) {
-                    moveDown({ x, y });
+                    // moveDown({ x, y });
+                    newFocusedCell = null;
                 } else {
                     newFocusedCell = this.state.activeCell;
                 }
             }
 
             if (e.keyCode === keys.TAB) {
-                if (this.state.focusedCell) {
-                    moveRight({ x, y });
-                } else {
-                    newFocusedCell = this.state.activeCell;
-                }
-
+                moveRight({ x, y });
                 e.preventDefault();
                 e.stopPropagation();
             }
@@ -192,9 +199,11 @@ class SpreadsheetGrid extends React.PureComponent {
                 }
             }
 
-            this.setState({
-                activeCell: newActiveCell,
-                focusedCell: newFocusedCell
+            this.setState((state) => {
+                return {
+                    activeCell: newActiveCell ? newActiveCell : state.activeCell,
+                    focusedCell: newFocusedCell
+                }
             });
         }
     }

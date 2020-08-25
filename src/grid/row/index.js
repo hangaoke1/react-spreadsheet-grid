@@ -42,6 +42,7 @@ class SpreadsheetRow extends React.Component {
             x,
             height,
             columns,
+            rowIndex,
             row,
             onCellClick,
             onCellDoubleClick,
@@ -76,6 +77,7 @@ class SpreadsheetRow extends React.Component {
                             >
                                 {
                                     column.value(row, {
+                                        index: x,
                                         active: isEqual(activeCell, coords),
                                         focus: isEqual(focusedCell, coords),
                                         disabled

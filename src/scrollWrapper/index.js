@@ -114,6 +114,7 @@ class SpreadsheetGridScrollWrapper extends React.PureComponent {
             let restColumnsCount = cells.length;
             const preparedColumnWidthValues = {};
 
+            // 计算已经分配空间
             cells.forEach((cell, i) => {
                 const id = this.props.columns[i].id;
 
@@ -124,6 +125,7 @@ class SpreadsheetGridScrollWrapper extends React.PureComponent {
                 }
             });
 
+            // 计算剩余空间
             cells.forEach((cell, i) => {
                 const id = this.props.columns[i].id;
 
@@ -382,6 +384,31 @@ class SpreadsheetGridScrollWrapper extends React.PureComponent {
         );
     }
 
+    hanldeActiveCellChange = (activeCell) => {
+        if (activeCell) {
+            const { x } = activeCell;
+            const { rowHeight } = this.props;
+            const { offsetHeight, scrollTop } = this.scrollWrapperEl.current
+            const xTop = rowHeight * (x + 1);
+            const diff = scrollTop + offsetHeight - xTop
+            // 向下滚动
+            if (diff < 0) {
+                this.scrollWrapperEl.current.scrollTop += Math.abs(diff)
+                this.setScrollState();
+            }
+    
+            const diff2 = xTop - scrollTop - rowHeight
+            // 向上滚动
+            if (diff2 < 0) {
+                this.scrollWrapperEl.current.scrollTop -= Math.abs(diff2)
+                this.setScrollState();
+            }
+        }
+       
+        if (this.props.onActiveCellChanged) {
+            this.props.onActiveCellChanged(activeCell)
+        }
+    }
     render() {
         const rows = slice(
             this.props.rows,
@@ -414,6 +441,7 @@ class SpreadsheetGridScrollWrapper extends React.PureComponent {
                     {
                         <Grid
                             {...this.props}
+                            onActiveCellChanged={this.hanldeActiveCellChange}
                             ref={this.grid}
                             rows={rows}
                             allRows={this.props.rows}

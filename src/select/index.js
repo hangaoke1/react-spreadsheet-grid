@@ -15,15 +15,15 @@ class SpreadsheetGridSelect extends React.PureComponent {
 
         this.state = {
             isOpen: this.props.isOpen,
-            selectedId: this.props.selectedId
+            value: this.props.value
         };
     }
 
-    static getDerivedStateFromProps({ isOpen, selectedId }, prevState) {
+    static getDerivedStateFromProps({ isOpen, value }, prevState) {
         return {
             ...prevState,
             isOpen,
-            selectedId
+            value
         };
     }
 
@@ -35,13 +35,13 @@ class SpreadsheetGridSelect extends React.PureComponent {
         document.removeEventListener('keydown', this.onGlobalKeyDown, false);
     }
 
-    onItemClick(selectedId, item) {
+    onItemClick(value, item) {
         this.setState({
-            selectedId,
+            value,
             isOpen: false
         }, () => {
             if (this.props.onChange) {
-                this.props.onChange(selectedId, item);
+                this.props.onChange(value, item);
             }
         });
     }
@@ -72,7 +72,7 @@ class SpreadsheetGridSelect extends React.PureComponent {
                     });
                 }
 
-                if (this.state.selectedIndex > this.props.items.length - 1) {
+                if (this.state.selectedIndex > this.props.options.length - 1) {
                     this.setState({
                         selectedIndex: 0
                     });
@@ -86,20 +86,20 @@ class SpreadsheetGridSelect extends React.PureComponent {
                     });
                 } else {
                     this.setState({
-                        selectedIndex: this.props.items.length - 1
+                        selectedIndex: this.props.options.length - 1
                     });
                 }
 
                 if (this.state.selectedIndex < 0) {
                     this.setState({
-                        selectedIndex: this.props.items.length - 1
+                        selectedIndex: this.props.options.length - 1
                     });
                 }
             }
             if (e.keyCode === keys.ENTER || e.keyCode === keys.TAB) {
                 if (this.state.selectedIndex || this.state.selectedIndex === 0) {
-                    const selectedItem = this.props.items[this.state.selectedIndex];
-                    this.onItemClick(selectedItem.id, selectedItem);
+                    const selectedItem = this.props.options[this.state.selectedIndex];
+                    this.onItemClick(selectedItem.value, selectedItem);
                 }
             }
 
@@ -113,17 +113,17 @@ class SpreadsheetGridSelect extends React.PureComponent {
     }
 
     isHasValue() {
-        return this.state.selectedId && this.props.items;
+        return (this.state.value !== undefined) && this.props.options;
     }
 
     getHeaderValue() {
         let value;
 
         if (this.isHasValue()) {
-            value = find(this.props.items, {
-                id: this.state.selectedId
+            value = find(this.props.options, {
+                value: this.state.value
             });
-            value = value ? value.name : value;
+            value = value ? value.label : value;
         } else {
             value = this.props.placeholder;
         }
@@ -147,21 +147,21 @@ class SpreadsheetGridSelect extends React.PureComponent {
     }
 
     renderBody() {
-        const items = this.props.items;
+        const options = this.props.options;
 
         return (
             <div>
                 {
-                    items && items.map((item, i) => {
+                    options && options.map((item, i) => {
                         return (
                             <div
                                 key={i}
                                 className={this.getItemClassName(i === this.state.selectedIndex)}
-                                onClick={this.onItemClick.bind(this, item.id, item)}
+                                onClick={this.onItemClick.bind(this, item.value, item)}
                                 onMouseEnter={this.onItemMouseEnter.bind(this, i)}
                                 onMouseLeave={this.onItemMouseLeave}
                             >
-                                {item.name}
+                                {item.label}
                             </div>
                         );
                     })
@@ -187,11 +187,11 @@ const IdPropType = PropTypes.oneOfType([
 ]);
 
 SpreadsheetGridSelect.propTypes = {
-    selectedId: IdPropType,
-    items: PropTypes.arrayOf(
+    value: IdPropType,
+    options: PropTypes.arrayOf(
         PropTypes.shape({
-            id: IdPropType,
-            value: PropTypes.string
+            value: IdPropType,
+            label: PropTypes.string
         })
     ),
     onChange: PropTypes.func,
@@ -200,7 +200,7 @@ SpreadsheetGridSelect.propTypes = {
 };
 
 SpreadsheetGridSelect.defaultProps = {
-    items: [],
+    options: [],
     placeholder: '',
     isOpen: false
 };

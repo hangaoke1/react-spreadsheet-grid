@@ -7,7 +7,7 @@ import { Grid, Input, Select } from './../index';
 const rows = [];
 const positions = [];
 
-for (let i = 0; i < 1000; i++) {
+for (let i = 0; i < 100; i++) {
     rows.push({
         id: i,
         firstName: 'First name ' + i,
@@ -17,10 +17,10 @@ for (let i = 0; i < 1000; i++) {
     });
 }
 
-for (let i = 1; i < 6; i++) {
+for (let i = 0; i < 6; i++) {
     positions.push({
-        id: i,
-        name: 'Long Position Name ' + i
+        value: i,
+        label: 'Long Position Name ' + i
     });
 }
 
@@ -49,7 +49,7 @@ function DataTable(props) {
             },
             {
                 title: 'Second name',
-                value: (row, {focus}) => {
+                value: (row, {focus, index}) => {
                     return (
                         <Input
                             value={row.secondName}
@@ -65,9 +65,9 @@ function DataTable(props) {
                 value: (row, {focus}) => {
                     return (
                         <Select
-                            selectedId={row.positionId}
+                            value={row.positionId}
                             isOpen={focus}
-                            items={positions}
+                            options={positions}
                             onChange={onFieldChange(row.id, 'positionId')}
                         />
                     );
