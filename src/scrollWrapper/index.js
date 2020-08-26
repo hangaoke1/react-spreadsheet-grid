@@ -263,7 +263,7 @@ class SpreadsheetGridScrollWrapper extends React.PureComponent {
         const scrollDummyEl = this.scrollDummyEl.current;
         const rows = this.props.rows;
 
-        if (!this.props.isScrollable) {
+        if (!this.props.isScrollable || !scrollWrapperEl) {
             return;
         }
 

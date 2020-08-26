@@ -80,6 +80,12 @@ class SpreadsheetGrid extends React.PureComponent {
     }
 
     onGlobalKeyDown(e) {
+        // console.log('>>> onGlobalKeyDown')
+        // 多选时，需要阻止回车事件
+        if (e.disableGridAction) {
+            e.preventDefault();
+            return;
+        }
         const block = this;
         const columnsCount = this.props.columns.length;
         const rowsCount = this.props.rowsCount;
@@ -208,7 +214,13 @@ class SpreadsheetGrid extends React.PureComponent {
         }
     }
 
-    onGlobalClick() {
+    onGlobalClick(event) {
+        // 支持多选框，点击x删除选项
+        if (event && event.disableGridAction) {
+            this.skipGlobalClick = false;
+            return;
+        }
+        // 全局失去焦点
         if (!this.skipGlobalClick) {
             this.setState({
                 activeCell: null,

@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-
 import { storiesOf } from '@storybook/react';
-
 import { Grid, Input, Select } from './../index';
+import AntSelect from './AntSelect';
 
 const rows = [];
 const positions = [];
@@ -17,7 +16,7 @@ for (let i = 0; i < 100; i++) {
     });
 }
 
-for (let i = 0; i < 6; i++) {
+for (let i = 0; i < 10; i++) {
     positions.push({
         value: i,
         label: 'Long Position Name ' + i
@@ -59,6 +58,28 @@ function DataTable(props) {
                     );
                 },
                 id: 'secondName'
+            },
+            {
+                title: '多选',
+                value: (row, {focus, index}) => {
+                    const options = [{'label': '苹果', value: 'appple'}, {'label': '橘子', value: 'orgin'}]
+                    if (focus) {
+                        return (
+                            <AntSelect
+                                autoFocus
+                                open
+                                mode="multiple"
+                                style={{width: '100%'}}
+                                value={row.mulSelect}
+                                onChange={onFieldChange(row.id, 'mulSelect')}
+                                options={options}
+                            />
+                        );
+                    } else {
+                        return <span>{row.mulSelect ? row.mulSelect.join('、') : '请选择'}</span>
+                    }
+                },
+                id: 'mulSelect'
             },
             {
                 title: 'Position',
