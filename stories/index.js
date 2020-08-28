@@ -136,6 +136,9 @@ function DataTable(props) {
                 disabledCellChecker={(row, columnId) => {
                     return columnId === 'age';
                 }}
+                // readOnlyCellChecker={(row, columnId) => {
+                //     return columnId === 'age';
+                // }}
                 isScrollable={props.isScrollable}
             />
         </div>

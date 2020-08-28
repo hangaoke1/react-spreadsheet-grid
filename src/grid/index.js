@@ -80,7 +80,6 @@ class SpreadsheetGrid extends React.PureComponent {
     }
 
     onGlobalKeyDown(e) {
-        // console.log('>>> onGlobalKeyDown')
         // 多选时，需要阻止回车事件
         if (e.disableGridAction) {
             e.preventDefault();
@@ -186,7 +185,12 @@ class SpreadsheetGrid extends React.PureComponent {
                     // moveDown({ x, y });
                     newFocusedCell = null;
                 } else {
-                    newFocusedCell = this.state.activeCell;
+                    // feature: 支持设置单元格禁止聚焦
+                    if (!find(this.props.readOnlyCells, this.state.activeCell)) {
+                        newFocusedCell = this.state.activeCell;
+                    } else {
+                        newFocusedCell = null;
+                    }
                 }
             }
 
@@ -332,6 +336,12 @@ SpreadsheetGrid.propTypes = Object.assign({}, tablePropTypes, {
     startIndex: PropTypes.number.isRequired,
     rowsCount: PropTypes.number.isRequired,
     disabledCells: PropTypes.arrayOf(
+        PropTypes.shape({
+            x: PropTypes.number,
+            y: PropTypes.number
+        })
+    ).isRequired,
+    readOnlyCells: PropTypes.arrayOf(
         PropTypes.shape({
             x: PropTypes.number,
             y: PropTypes.number

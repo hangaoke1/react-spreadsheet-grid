@@ -318,19 +318,24 @@ class SpreadsheetGridScrollWrapper extends React.PureComponent {
 
     getDisabledCells(rows, startIndex) {
         const disabledCells = [];
+        const readOnlyCells = [];
         const disabledCellChecker = this.props.disabledCellChecker;
+        const readOnlyCellChecker = this.props.readOnlyCellChecker;
 
-        if (disabledCellChecker) {
+        if (disabledCellChecker || readOnlyCellChecker) {
             rows.forEach((row, x) => {
                 this.props.columns.forEach((column, y) => {
-                    if (disabledCellChecker(row, column.id)) {
+                    if (disabledCellChecker && disabledCellChecker(row, column.id)) {
                         disabledCells.push({ x: startIndex + x, y });
+                    }
+                    if (readOnlyCellChecker && readOnlyCellChecker(row, column.id)) {
+                        readOnlyCells.push({ x: startIndex + x, y });
                     }
                 });
             });
         }
 
-        return disabledCells;
+        return { disabledCells, readOnlyCells};
     }
 
     getScrollWrapperClassName() {
@@ -416,6 +421,8 @@ class SpreadsheetGridScrollWrapper extends React.PureComponent {
             this.state.last
         );
 
+        const { disabledCells, readOnlyCells } = this.getDisabledCells(rows, this.state.first)
+
         return (
             <div
                 className="SpreadsheetGridContainer"
@@ -449,7 +456,8 @@ class SpreadsheetGridScrollWrapper extends React.PureComponent {
                             startIndex={this.state.first}
                             offset={this.state.offset}
                             columnWidthValues={this.state.columnWidthValues}
-                            disabledCells={this.getDisabledCells(rows, this.state.first)}
+                            disabledCells={disabledCells}
+                            readOnlyCells={readOnlyCells}
                         />
                     }
                 </div>
